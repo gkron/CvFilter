@@ -29,8 +29,10 @@ from spacy.matcher import PhraseMatcher
 
 
 #Function to read resumes from the folder one by one
-
-mypath='D:/pdf samples' #enter your path here where you saved the resumes
+#cwd = os.getcwd()
+#print(cwd)
+#mypath= cwd+'//Resumepdfsamples'
+mypath='D:/eclipse-workspace/ResumeParserUtilty/Resumepdfsamples' #enter your path here where you saved the resumes
 
 onlyfiles = [os.path.join(mypath, f) for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
 
@@ -81,8 +83,8 @@ def create_profile(file):
     text = text.lower()
 
     #below is the csv where we have all the keywords, you can customize your own
-
-    keyword_dict = pd.read_csv('D:/datasample/template_new.csv')
+   # cwd = os.getcwd()
+    keyword_dict = pd.read_csv('D:/eclipse-workspace/ResumeParserUtilty/DataDictionary/template_new.csv')
     print(keyword_dict)
     stats_words = [nlp(text) for text in keyword_dict['Statistics'].dropna(axis = 0)]
 
