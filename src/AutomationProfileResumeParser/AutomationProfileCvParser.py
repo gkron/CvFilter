@@ -3,7 +3,7 @@
 
 #importing all required libraries
 
-
+import matplotlib.pyplot as plt
 
 import PyPDF2
 
@@ -27,96 +27,86 @@ nlp = en_core_web_sm.load()
 from spacy.matcher import PhraseMatcher
 
 
-
+import docx
+import nltk
 #Function to read resumes from the folder one by one
 #cwd = os.getcwd()
 #print(cwd)
 #mypath= cwd+'//Resumepdfsamples'
-mypath='D:/eclipse-workspace/ResumeParserUtilty/Resumepdfsamples' #enter your path here where you saved the resumes
+mypath='D:/eclipse-workspace/ResumeParserUtilty/ResumeSamplesInDocsFormat' #enter your path here where you saved the resumes
 
 onlyfiles = [os.path.join(mypath, f) for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
 
 
 
-def pdfextract(file):
-
-    fileReader = PyPDF2.PdfFileReader(open(file,'rb'))
-
-    countpage = fileReader.getNumPages()
-
-    count = 0
-
-    text = []
-
-    while count < countpage:    
-
-        pageObj = fileReader.getPage(count)
-
-        count +=1
-
-        t = pageObj.extractText()
-
-        print(t.encode("utf-8"))
-
-        text.append(t)
-
-    return text
-
-
-
 #function to read resume ends
 
-
-
-
+def getDocxContent(filename):
+    doc = docx.Document(filename)
+    fullText = ""
+    for para in doc.paragraphs:
+        fullText += para.text
+    return fullText
+    
 
 #function that does phrase matching and builds a candidate profile
 
 def create_profile(file):
 
-    text = pdfextract(file) 
 
+    text = getDocxContent(file) 
     text = str(text)
-
     text = text.replace("\\n", "")
-
     text = text.lower()
+    
 
     #below is the csv where we have all the keywords, you can customize your own
    # cwd = os.getcwd()
-    keyword_dict = pd.read_csv('D:/eclipse-workspace/ResumeParserUtilty/DataDictionary/template_new.csv')
-    print(keyword_dict)
-    stats_words = [nlp(text) for text in keyword_dict['Statistics'].dropna(axis = 0)]
+    keyword_dict = pd.read_csv('D:/eclipse-workspace/ResumeParserUtilty/DataDictionary/AutomationProfileSearch.csv')
+    AutomationTool = [nlp(text) for text in keyword_dict['Automation tools'].dropna(axis = 0)]
 
-    NLP_words = [nlp(text) for text in keyword_dict['NLP'].dropna(axis = 0)]
+    java_words = [nlp(text) for text in keyword_dict['Java Language'].dropna(axis = 0)]
 
     ML_words = [nlp(text) for text in keyword_dict['Machine Learning'].dropna(axis = 0)]
 
     DL_words = [nlp(text) for text in keyword_dict['Deep Learning'].dropna(axis = 0)]
 
-    R_words = [nlp(text) for text in keyword_dict['R Language'].dropna(axis = 0)]
+    JS_words = [nlp(text) for text in keyword_dict['JS Lanaguage'].dropna(axis = 0)]
 
     python_words = [nlp(text) for text in keyword_dict['Python Language'].dropna(axis = 0)]
 
     Data_Engineering_words = [nlp(text) for text in keyword_dict['Data Engineering'].dropna(axis = 0)]
+    
+    Bug_words = [nlp(text) for text in keyword_dict['Bug Tracking Tools'].dropna(axis = 0)]
+
+    test_words = [nlp(text) for text in keyword_dict['Test Management Tool'].dropna(axis = 0)]
+
+    Database_words = [nlp(text) for text in keyword_dict['DataBase'].dropna(axis = 0)]
 
 
 
     matcher = PhraseMatcher(nlp.vocab)
 
-    matcher.add('Stats', None, *stats_words)
 
-    matcher.add('NLP', None, *NLP_words)
+    matcher.add('AutoTool', None, *AutomationTool)
+
+    matcher.add('JAVA', None, *java_words)
 
     matcher.add('ML', None, *ML_words)
 
     matcher.add('DL', None, *DL_words)
 
-    matcher.add('R', None, *R_words)
+    matcher.add('JS', None, *JS_words)
 
     matcher.add('Python', None, *python_words)
 
     matcher.add('DE', None, *Data_Engineering_words)
+    
+    matcher.add('JIRA', None, *Bug_words)
+
+    matcher.add('TM', None, *test_words)
+
+    matcher.add('DB', None, *Database_words)
 
     doc = nlp(text)
 
@@ -141,7 +131,7 @@ def create_profile(file):
     ## convertimg string of keywords to dataframe
 
     df = pd.read_csv(StringIO(keywords),names = ['Keywords_List'])
-
+    print("-----------------------------------------------------")
     df1 = pd.DataFrame(df.Keywords_List.str.split(' ',1).tolist(),columns = ['Subject','Keyword'])
 
     df2 = pd.DataFrame(df1.Keyword.str.split('(',1).tolist(),columns = ['Keyword', 'Count'])
@@ -171,7 +161,6 @@ def create_profile(file):
     
 
     dataf = pd.concat([name3['Candidate Name'], df3['Subject'], df3['Keyword'], df3['Count']], axis = 1)
-
     dataf['Candidate Name'].fillna(dataf['Candidate Name'].iloc[0], inplace = True)
 
 
@@ -222,11 +211,12 @@ new_data = final_database2.iloc[:,1:]
 
 new_data.index = final_database2['Candidate Name']
 
+
 #execute the below line if you want to see the candidate profile in a csv format
 
 #sample2=new_data.to_csv('sample.csv')
 
-import matplotlib.pyplot as plt
+
 
 plt.rcParams.update({'font.size': 10})
 
