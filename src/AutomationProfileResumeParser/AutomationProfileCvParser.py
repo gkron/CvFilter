@@ -4,11 +4,11 @@
 #importing all required libraries
 
 import matplotlib.pyplot as plt
-
+from matplotlib.ticker import StrMethodFormatter
 import PyPDF2
 
 import os
-
+import numpy as np
 from os import listdir
 
 from os.path import isfile, join
@@ -216,11 +216,34 @@ new_data.index = final_database2['Candidate Name']
 
 #sample2=new_data.to_csv('sample.csv')
 
-
-
 plt.rcParams.update({'font.size': 10})
 
-ax = new_data.plot.barh(title="Resume keywords by category", legend=False, figsize=(25,7), stacked=True)
+ax = new_data.plot.barh(title="Resume keywords by category", legend=False, figsize=(8,16), stacked=True,color='#86bf91', zorder=2, width=0.85)
+
+# Despine
+ax.spines['right'].set_visible(False)
+ax.spines['top'].set_visible(False)
+ax.spines['left'].set_visible(False)
+ax.spines['bottom'].set_visible(False)
+
+# Switch off ticks
+ax.tick_params(axis="both", which="both", bottom="off", top="off", labelbottom="on", left="off", right="off", labelleft="on")
+
+# Draw vertical axis lines
+vals = ax.get_xticks()
+for tick in vals:
+    ax.axvline(x=tick, linestyle='dashed', alpha=0.4, color='#eeeeee', zorder=1)
+
+# Set x-axis label
+ax.set_xlabel("Candidates skill Summary", labelpad=20, weight='bold', size=12)
+
+# Set y-axis label
+ax.set_ylabel("Candidate Names", labelpad=20, weight='bold', size=12)
+
+# Format y-axis label
+ax.xaxis.set_major_formatter(StrMethodFormatter('{x:,g}'))
+#ax = new_data.plot.scatter(title="Resume keywords by category", legend=False, figsize=(25,7), stacked=True)
+#ax= new_data.plot
 
 labels = []
 
