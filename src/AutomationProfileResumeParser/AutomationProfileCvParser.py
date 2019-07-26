@@ -28,11 +28,7 @@ from spacy.matcher import PhraseMatcher
 
 
 import docx
-import nltk
-#Function to read resumes from the folder one by one
-#cwd = os.getcwd()
-#print(cwd)
-#mypath= cwd+'//Resumepdfsamples'
+
 mypath='D:/eclipse-workspace/ResumeParserUtilty/ResumeSamplesInDocsFormat' #enter your path here where you saved the resumes
 
 onlyfiles = [os.path.join(mypath, f) for f in os.listdir(mypath) if os.path.isfile(os.path.join(mypath, f))]
@@ -41,8 +37,8 @@ onlyfiles = [os.path.join(mypath, f) for f in os.listdir(mypath) if os.path.isfi
 
 #function to read resume ends
 
-def getDocxContent(filename):
-    doc = docx.Document(filename)
+def getDocxContent(file):
+    doc = docx.Document(file)
     fullText = ""
     for para in doc.paragraphs:
         fullText += para.text
@@ -61,15 +57,13 @@ def create_profile(file):
     
 
     #below is the csv where we have all the keywords, you can customize your own
-   # cwd = os.getcwd()
+
     keyword_dict = pd.read_csv('D:/eclipse-workspace/ResumeParserUtilty/DataDictionary/AutomationProfileSearch.csv')
     AutomationTool = [nlp(text) for text in keyword_dict['Automation tools'].dropna(axis = 0)]
 
     java_words = [nlp(text) for text in keyword_dict['Java Language'].dropna(axis = 0)]
 
-    ML_words = [nlp(text) for text in keyword_dict['Machine Learning'].dropna(axis = 0)]
-
-    DL_words = [nlp(text) for text in keyword_dict['Deep Learning'].dropna(axis = 0)]
+    bigdata_words = [nlp(text) for text in keyword_dict['Big Data'].dropna(axis = 0)]
 
     JS_words = [nlp(text) for text in keyword_dict['JS Lanaguage'].dropna(axis = 0)]
 
@@ -87,14 +81,11 @@ def create_profile(file):
 
     matcher = PhraseMatcher(nlp.vocab)
 
-
     matcher.add('AutoTool', None, *AutomationTool)
 
     matcher.add('JAVA', None, *java_words)
 
-    matcher.add('ML', None, *ML_words)
-
-    matcher.add('DL', None, *DL_words)
+    matcher.add('BigData', None, *bigdata_words)
 
     matcher.add('JS', None, *JS_words)
 
@@ -131,13 +122,9 @@ def create_profile(file):
     ## convertimg string of keywords to dataframe
 
     df = pd.read_csv(StringIO(keywords),names = ['Keywords_List'])
-    print("-----------------------------------------------------")
     df1 = pd.DataFrame(df.Keywords_List.str.split(' ',1).tolist(),columns = ['Subject','Keyword'])
-
     df2 = pd.DataFrame(df1.Keyword.str.split('(',1).tolist(),columns = ['Keyword', 'Count'])
-
     df3 = pd.concat([df1['Subject'],df2['Keyword'], df2['Count']], axis =1) 
-
     df3['Count'] = df3['Count'].apply(lambda x: x.rstrip(")"))
 
     
@@ -214,36 +201,11 @@ new_data.index = final_database2['Candidate Name']
 
 #execute the below line if you want to see the candidate profile in a csv format
 
-#sample2=new_data.to_csv('sample.csv')
+sample2=new_data.to_csv('D:/eclipse-workspace/ResumeParserUtilty/ProfileOutPutResult/AutomationProfileOutPut.csv')
 
 plt.rcParams.update({'font.size': 10})
 
-ax = new_data.plot.barh(title="Resume keywords by category", legend=False, figsize=(8,16), stacked=True,color='#86bf91', zorder=2, width=0.85)
-
-# Despine
-ax.spines['right'].set_visible(False)
-ax.spines['top'].set_visible(False)
-ax.spines['left'].set_visible(False)
-ax.spines['bottom'].set_visible(False)
-
-# Switch off ticks
-ax.tick_params(axis="both", which="both", bottom="off", top="off", labelbottom="on", left="off", right="off", labelleft="on")
-
-# Draw vertical axis lines
-vals = ax.get_xticks()
-for tick in vals:
-    ax.axvline(x=tick, linestyle='dashed', alpha=0.4, color='#eeeeee', zorder=1)
-
-# Set x-axis label
-ax.set_xlabel("Candidates skill Summary", labelpad=20, weight='bold', size=12)
-
-# Set y-axis label
-ax.set_ylabel("Candidate Names", labelpad=20, weight='bold', size=12)
-
-# Format y-axis label
-ax.xaxis.set_major_formatter(StrMethodFormatter('{x:,g}'))
-#ax = new_data.plot.scatter(title="Resume keywords by category", legend=False, figsize=(25,7), stacked=True)
-#ax= new_data.plot
+ax = new_data.plot.barh(title="Resume keywords by category", legend=False, figsize=(8,15), stacked=True)
 
 labels = []
 

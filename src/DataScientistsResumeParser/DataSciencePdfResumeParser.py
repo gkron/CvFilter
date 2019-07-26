@@ -26,6 +26,8 @@ nlp = en_core_web_sm.load()
 
 from spacy.matcher import PhraseMatcher
 
+import matplotlib.pyplot as plt
+
 
 
 #Function to read resumes from the folder one by one
@@ -189,19 +191,19 @@ def create_profile(file):
 
 
 final_database=pd.DataFrame()
-
+ 
 i = 0 
-
+ 
 while i < len(onlyfiles):
-
+ 
     file = onlyfiles[i]
-
+ 
     dat = create_profile(file)
-
+ 
     final_database = final_database.append(dat)
-
+ 
     i +=1
-
+ 
     print(final_database)
 
 
@@ -210,52 +212,49 @@ while i < len(onlyfiles):
 
 #code to count words under each category and visulaize it through Matplotlib
 
-
-
 final_database2 = final_database['Keyword'].groupby([final_database['Candidate Name'], final_database['Subject']]).count().unstack()
-
+ 
 final_database2.reset_index(inplace = True)
-
+ 
 final_database2.fillna(0,inplace=True)
-
+ 
 new_data = final_database2.iloc[:,1:]
-
+ 
 new_data.index = final_database2['Candidate Name']
 
 #execute the below line if you want to see the candidate profile in a csv format
 
-#sample2=new_data.to_csv('sample.csv')
+sample2=new_data.to_csv('D:/eclipse-workspace/ResumeParserUtilty/ProfileOutPutResult/DatascinceProfileOutput.csv')
 
-import matplotlib.pyplot as plt
 
 plt.rcParams.update({'font.size': 10})
-
-ax = new_data.plot.barh(title="Resume keywords by category", legend=False, figsize=(25,7), stacked=True)
-
+ 
+ax = new_data.plot.barh(title="Resume keywords by category", legend=False, figsize=(25,8), stacked=True)
+ 
 labels = []
-
+ 
 for j in new_data.columns:
-
+ 
     for i in new_data.index:
-
+ 
         label = str(j)+": " + str(new_data.loc[i][j])
-
+ 
         labels.append(label)
-
+ 
 patches = ax.patches
-
+ 
 for label, rect in zip(labels, patches):
-
+ 
     width = rect.get_width()
-
+ 
     if width > 0:
-
+ 
         x = rect.get_x()
-
+ 
         y = rect.get_y()
-
+ 
         height = rect.get_height()
-
+ 
         ax.text(x + width/2., y + height/2., label, ha='center', va='center')
-
+ 
 plt.show()

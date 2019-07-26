@@ -1,3 +1,9 @@
-Automation tools,Machine Learning,Deep Learning,Java Language,Python Language,JS Lanaguage,Data Engineering,Bug Tracking Tools,Test Management Tool,DataBase
-selenium,linear regression,neural network,java,python,java script,AWS,jira,test link,sql
-web driver,,,,,,,version one,,my sql
+Automation tools,Java Language,Python Language,JS Lanaguage,Data Engineering,Bug Tracking Tools,Test Management Tool,DataBase,Big Data
+selenium,java,python,java script,AWS,jira,test link,sql,hive
+web driver,,,js,cloud,version one,,my sql,hbase
+rc,,,,,mingle,,,hadoop
+pom,,,,,,,,hdfs
+html,,,,,,,,kafaka
+css,,,,,,,,spark
+,,,,,,,,map reduce
+,,,,,,,,big data
